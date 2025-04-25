@@ -1,98 +1,230 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Car Parking System API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A RESTful API for managing a car parking system built with NestJS and TypeScript. This system allows for automated parking management without human intervention.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- Initialize parking lot with specified number of slots
+- Expand parking lot capacity
+- Park cars with automatic slot allocation
+- Free parking slots
+- Query parking status
+- Search cars by color
+- Search slots by color
+- Find slot by registration number
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tech Stack
 
-## Project setup
+- NestJS
+- TypeScript
+- Jest (for testing)
+
+## Installation
 
 ```bash
-$ npm install
+# Install dependencies
+npm install
+
+# Run the application
+npm run start:dev
+
+# Run tests
+npm test
 ```
 
-## Compile and run the project
+## API Documentation
+
+### 1. Initialize Parking Lot
+Initialize a new parking lot with specified number of slots.
+
+```http
+POST /parking_lot
+```
+
+**Request Body:**
+```json
+{
+  "no_of_slot": 6
+}
+```
+
+**Response:**
+```json
+{
+  "totalSlots": 6
+}
+```
+
+### 2. Expand Parking Lot
+Add more slots to the existing parking lot.
+
+```http
+PATCH /parking_lot
+```
+
+**Request Body:**
+```json
+{
+  "increment_slot": 3
+}
+```
+
+**Response:**
+```json
+{
+  "totalSlots": 9
+}
+```
+
+### 3. Park a Car
+Allocate a parking slot to a car.
+
+```http
+POST /parking_lot/park
+```
+
+**Request Body:**
+```json
+{
+  "car_reg_no": "KA-01-HH-1234",
+  "car_color": "white"
+}
+```
+
+**Response:**
+```json
+{
+  "allocatedSlotNumber": 1
+}
+```
+
+### 4. Free a Slot
+Free a parking slot by slot number or registration number.
+
+```http
+POST /parking_lot/clear
+```
+
+**Request Body (by slot number):**
+```json
+{
+  "slot_number": 1
+}
+```
+
+**Request Body (by registration number):**
+```json
+{
+  "car_registration_no": "KA-01-HH-1234"
+}
+```
+
+**Response:**
+```json
+{
+  "freedSlotNumber": 1
+}
+```
+
+### 5. Get Parking Status
+Get information about all occupied slots.
+
+```http
+GET /parking_lot/status
+```
+
+**Response:**
+```json
+[
+  {
+    "slotNumber": 1,
+    "car": {
+      "registrationNumber": "KA-01-HH-1234",
+      "color": "white"
+    }
+  },
+  {
+    "slotNumber": 2,
+    "car": {
+      "registrationNumber": "KA-01-HH-1235",
+      "color": "blue"
+    }
+  }
+]
+```
+
+### 6. Get Cars by Color
+Get registration numbers of all cars with a specific color.
+
+```http
+GET /parking_lot/registration_numbers/:color
+```
+
+**Response:**
+```json
+["KA-01-HH-1234", "KA-01-HH-1236"]
+```
+
+### 7. Get Slots by Color
+Get slot numbers of all cars with a specific color.
+
+```http
+GET /parking_lot/slot_numbers/:color
+```
+
+**Response:**
+```json
+[1, 3]
+```
+
+### 8. Get Slot by Registration Number
+Get slot number for a specific car registration number.
+
+```http
+GET /parking_lot/slot/:registrationNumber
+```
+
+**Response:**
+```json
+1
+```
+
+## Error Responses
+
+### Bad Request (400)
+```json
+{
+  "statusCode": 400,
+  "message": "Parking lot is full",
+  "error": "Bad Request"
+}
+```
+
+### Not Found (404)
+```json
+{
+  "statusCode": 404,
+  "message": "Car with registration number KA-01-HH-1234 not found",
+  "error": "Not Found"
+}
+```
+
+## Testing
+
+The project includes comprehensive unit tests for all API endpoints. Run tests using:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm test
 ```
 
-## Run tests
-
+For test coverage:
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run test:cov
 ```
 
-## Deployment
+## Design Considerations
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+1. **Error Handling**: Comprehensive error handling for all edge cases.
+2. **Type Safety**: Full TypeScript support with proper interfaces and types.
+3. **RESTful Design**: Follows REST principles with appropriate HTTP methods and status codes.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
