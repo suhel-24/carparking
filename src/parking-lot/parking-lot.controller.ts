@@ -29,10 +29,13 @@ export class ParkingLotController {
         return this.parkingLotService.initializeParkingLot(body.no_of_slot);
     }
 
+
     @Patch()
     expandParkingLot(@Body() body: ExpandParkingLotDto) {
         return this.parkingLotService.expandParkingLot(body.increment_slot);
     }
+
+
 
     @Post('park')
     parkCar(@Body() body: ParkCarDto) {
@@ -41,6 +44,36 @@ export class ParkingLotController {
             color: body.car_color,
         });
     }
+
+    @Post('clear')
+    freeSlot(@Body() body: FreeSlotDto) {
+        if (body.slot_number) {
+            return this.parkingLotService.freeSlot(body.slot_number);
+        } else if (body.car_registration_no) {
+            return this.parkingLotService.freeSlot(undefined, body.car_registration_no);
+        } else {
+            throw new BadRequestException('Either slot_number or car_registration_no must be provided');
+        }
+    }
+
+    @Get('status')
+    getStatus(): ParkingSlot[] {
+        return this.parkingLotService.getStatus();
+    }
+    
+
+    @Get('registration_numbers/:color')
+    getCarsByColor(@Param('color') color: string) {
+        return this.parkingLotService.getCarsByColor(color);
+    }
+
+
+
+    @Get('slot_numbers/:color')
+    getSlotsByColor(@Param('color') color: string) {
+        return this.parkingLotService.getSlotsByColor(color);
+    }
+
 
     
 } 

@@ -45,7 +45,47 @@ export class ParkingLotService {
         return { allocatedSlotNumber: availableSlot.slotNumber };
     }
 
-    
+    freeSlot(slotNumber?: number, registrationNumber?: string): { freedSlotNumber: number } {
+        let slot: ParkingSlot | undefined;
+
+        if (slotNumber) {
+            slot = this.parkingSlots.find(s => s.slotNumber === slotNumber);
+            if (!slot) {
+                throw new NotFoundException(`Slot ${slotNumber} not found`);
+            }
+        } else if (registrationNumber) {
+            slot = this.parkingSlots.find(s => s.car?.registrationNumber === registrationNumber);
+            if (!slot) {
+                throw new NotFoundException(`Car with registration number ${registrationNumber} not found`);
+            }
+        } else {
+            throw new BadRequestException('Either slot number or registration number must be provided');
+        }
+
+        if (!slot.car) {
+            throw new BadRequestException('Slot is already free');
+        }
+
+        slot.car = null;
+        return { freedSlotNumber: slot.slotNumber };
+    }
+
+    getStatus(): ParkingSlot[] {
+        return this.parkingSlots.filter(slot => slot.car !== null);
+    }
+
+    getCarsByColor(color: string): string[] {
+        return this.parkingSlots
+            .filter(slot => slot.car?.color.toLowerCase() === color.toLowerCase())
+            .map(slot => slot.car!.registrationNumber);
+    }
+
+    getSlotsByColor(color: string): number[] {
+        return this.parkingSlots
+            .filter(slot => slot.car?.color.toLowerCase() === color.toLowerCase())
+            .map(slot => slot.slotNumber);
+    }
+
 
     private isParkingLotFull(): boolean {
         return this.parkingSlots.every(slot => slot.car !== null);
