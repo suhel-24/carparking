@@ -66,5 +66,90 @@ describe('ParkingLotController', () => {
         });
     });
 
+    describe('freeSlot', () => {
+        beforeEach(() => {
+            controller.initializeParkingLot({ no_of_slot: 2 });
+            controller.parkCar({ car_reg_no: 'KA-01-HH-1234', car_color: 'white' });
+        });
+
+        it('should free slot by slot number', () => {
+            const result = controller.freeSlot({ slot_number: 1 });
+            expect(result).toEqual({ freedSlotNumber: 1 });
+        });
+
+        it('should free slot by registration number', () => {
+            const result = controller.freeSlot({ car_registration_no: 'KA-01-HH-1234' });
+            expect(result).toEqual({ freedSlotNumber: 1 });
+        });
+
+        it('should throw NotFoundException for non-existent slot', () => {
+            expect(() => controller.freeSlot({ slot_number: 3 }))
+                .toThrow(NotFoundException);
+        });
+
+        it('should throw NotFoundException for non-existent car', () => {
+            expect(() => controller.freeSlot({ car_registration_no: 'KA-01-HH-9999' }))
+                .toThrow(NotFoundException);
+        });
+    });
+
+    describe('getStatus', () => {
+        beforeEach(() => {
+            controller.initializeParkingLot({ no_of_slot: 2 });
+            controller.parkCar({ car_reg_no: 'KA-01-HH-1234', car_color: 'white' });
+        });
+
+        it('should return occupied slots', () => {
+            const result = controller.getStatus();
+            expect(result).toEqual([
+                {
+                    slotNumber: 1,
+                    car: {
+                        registrationNumber: 'KA-01-HH-1234',
+                        color: 'white',
+                    },
+                },
+            ]);
+        });
+    });
+
+    describe('getCarsByColor', () => {
+        beforeEach(() => {
+            controller.initializeParkingLot({ no_of_slot: 3 });
+            controller.parkCar({ car_reg_no: 'KA-01-HH-1234', car_color: 'white' });
+            controller.parkCar({ car_reg_no: 'KA-01-HH-1235', car_color: 'blue' });
+            controller.parkCar({ car_reg_no: 'KA-01-HH-1236', car_color: 'white' });
+        });
+
+        it('should return registration numbers of cars with given color', () => {
+            const result = controller.getCarsByColor('white');
+            expect(result).toEqual(['KA-01-HH-1234', 'KA-01-HH-1236']);
+        });
+
+        it('should return empty array for non-existent color', () => {
+            const result = controller.getCarsByColor('red');
+            expect(result).toEqual([]);
+        });
+    });
+
+    describe('getSlotsByColor', () => {
+        beforeEach(() => {
+            controller.initializeParkingLot({ no_of_slot: 3 });
+            controller.parkCar({ car_reg_no: 'KA-01-HH-1234', car_color: 'white' });
+            controller.parkCar({ car_reg_no: 'KA-01-HH-1235', car_color: 'blue' });
+            controller.parkCar({ car_reg_no: 'KA-01-HH-1236', car_color: 'white' });
+        });
+
+        it('should return slot numbers of cars with given color', () => {
+            const result = controller.getSlotsByColor('white');
+            expect(result).toEqual([1, 3]);
+        });
+
+        it('should return empty array for non-existent color', () => {
+            const result = controller.getSlotsByColor('red');
+            expect(result).toEqual([]);
+        });
+    });
+
     
 }); 

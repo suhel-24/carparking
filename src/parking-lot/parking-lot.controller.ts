@@ -68,7 +68,6 @@ export class ParkingLotController {
     }
 
 
-
     @Get('slot_numbers/:color')
     getSlotsByColor(@Param('color') color: string) {
         return this.parkingLotService.getSlotsByColor(color);

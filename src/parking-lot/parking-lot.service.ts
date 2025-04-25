@@ -86,6 +86,7 @@ export class ParkingLotService {
             .map(slot => slot.slotNumber);
     }
 
+    
 
     private isParkingLotFull(): boolean {
         return this.parkingSlots.every(slot => slot.car !== null);
