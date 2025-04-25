@@ -86,7 +86,16 @@ export class ParkingLotService {
             .map(slot => slot.slotNumber);
     }
 
-    
+
+    getSlotByRegistrationNumber(registrationNumber: string): number {
+        const slot = this.parkingSlots.find(
+            s => s.car?.registrationNumber.toLowerCase() === registrationNumber.toLowerCase(),
+        );
+        if (!slot) {
+            throw new NotFoundException(`Car with registration number ${registrationNumber} not found`);
+        }
+        return slot.slotNumber;
+    }
 
     private isParkingLotFull(): boolean {
         return this.parkingSlots.every(slot => slot.car !== null);

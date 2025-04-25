@@ -74,5 +74,10 @@ export class ParkingLotController {
     }
 
 
+    @Get('slot/:registrationNumber')
+    getSlotByRegistrationNumber(@Param('registrationNumber') registrationNumber: string) {
+        return this.parkingLotService.getSlotByRegistrationNumber(registrationNumber);
+    }
+
     
 } 

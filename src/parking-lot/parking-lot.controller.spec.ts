@@ -151,5 +151,22 @@ describe('ParkingLotController', () => {
         });
     });
 
+
+    describe('getSlotByRegistrationNumber', () => {
+        beforeEach(() => {
+            controller.initializeParkingLot({ no_of_slot: 2 });
+            controller.parkCar({ car_reg_no: 'KA-01-HH-1234', car_color: 'white' });
+        });
+
+        it('should return slot number for given registration number', () => {
+            const result = controller.getSlotByRegistrationNumber('KA-01-HH-1234');
+            expect(result).toBe(1);
+        });
+
+        it('should throw NotFoundException for non-existent registration number', () => {
+            expect(() => controller.getSlotByRegistrationNumber('KA-01-HH-9999'))
+                .toThrow(NotFoundException);
+        });
+    });
     
 }); 
