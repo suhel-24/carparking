@@ -42,10 +42,11 @@ export class ParkingLotService {
         }
 
         availableSlot.car = car;
+
         return { allocatedSlotNumber: availableSlot.slotNumber };
     }
 
-    freeSlot(slotNumber?: number, registrationNumber?: string): { freedSlotNumber: number } {
+    freeSlot(slotNumber?: number, registrationNumber?: string): { freedSlotNumber: number,price : number } {
         let slot: ParkingSlot | undefined;
 
         if (slotNumber) {
@@ -65,9 +66,19 @@ export class ParkingLotService {
         if (!slot.car) {
             throw new BadRequestException('Slot is already free');
         }
+        let leavingtime=new Date();
+
+        let enteredTime=slot.car.enteredtime;
+
+        const timeParked=leavingtime.getMinutes()-enteredTime.getMinutes()
+        console.log(leavingtime.getHours(),enteredTime.getHours())
+
+        const priceToBePaid=10*timeParked
+
+
 
         slot.car = null;
-        return { freedSlotNumber: slot.slotNumber };
+        return { freedSlotNumber: slot.slotNumber, price: priceToBePaid };
     }
 
     getStatus(): ParkingSlot[] {

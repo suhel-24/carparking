@@ -42,6 +42,7 @@ export class ParkingLotController {
         return this.parkingLotService.parkCar({
             registrationNumber: body.car_reg_no,
             color: body.car_color,
+            enteredtime: new Date()
         });
     }
 
